@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Post;
 use Intervention\Image\Facades\Image;
 
 class PostsController extends Controller
@@ -10,6 +11,15 @@ class PostsController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+    }
+
+    public function index()
+    {
+        $users = auth()->user()->following()->pluck('profiles.user_id');
+        $posts = Post::whereIn('user_id',$users)->orderBy('created_at','DESC')->get();
+
+        // dd($posts);
+        return view('posts.index',compact('posts'));
     }
 
     public function create()
